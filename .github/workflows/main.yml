@@ -22,14 +22,12 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL' 
 
-
       - name: Send Slack failure message
         if: failure() 
         uses: slackapi/slack-github-action@v1.26.0
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "Scan failure !"
-
 
       - name: Upload Trivy scan results to slack
         uses: MeilCli/slack-upload-file@v4
@@ -47,8 +45,8 @@ jobs:
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+      
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
       - name: Login to Docker Hub
@@ -64,15 +62,15 @@ jobs:
           push: true
           tags: zhaozy268/gofortune_workshop:latest
 
-
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
         with:
           cosign-release: 'v2.2.4'
+      
       - name: Check install!
         run: cosign version
 
-       - name: Sign the images with GitHub OIDC Token
+      - name: Sign the images with GitHub OIDC Token
         env:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
           TAGS: ${{ steps.docker_meta.outputs.tags }}
