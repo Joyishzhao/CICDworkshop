@@ -1,105 +1,45 @@
-name: workflow
-
-on: 
-  push:
-      branches:
-              - 'release/v[0-9]+.[0-9]+'
-
-#SCAN
-jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          ignore-unfixed: true
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL' 
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-#Slack Notification
-- name: Send GitHub Action trigger data to Slack workflow
-  id: slack
-  uses: slackapi/slack-github-action@v1.26.0
-  env:
-    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-#Message Format
-
-#Slack upload file 
-jobs:
-  post:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: MeilCli/slack-upload-file@v4
-        with:
-          slack_token: ${{ secrets.SLACK_TOKEN }}
-          channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
-          content: 'file content'
-          file_type: 'text'
-          file_name: 'text.txt'
-          title: 'title of file'
-          initial_comment: 'post by slack-upload-file'
-          # thread_ts: 'option
-
-#Build and push docker container
-name: ci
+name: CI
 
 on:
   push:
     branches:
-      - 'main'
+      - 'release/v[0-9]+\.[0-9]+'
 
 jobs:
-  docker:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
     steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: user/app:latest
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-#Digitally Sign images with Cosign
-jobs:
-  example:
-    runs-on: ubuntu-latest
-
-    permissions: {}
-
-    name: Install Cosign via go install
-    steps:
-      - name: Install go
-        uses: actions/setup-go@v4
+      - name: Vulnerability Scan with Trivy
+        uses: aquasecurity/trivy-action@master
         with:
-          go-version: '1.21'
-          check-latest: true
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.5.0
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          scan-type: 'filesystem'
+          scan-dir: '.'
+          format: 'table'
+          fail-on: 'CRITICAL'
+          ignore-unfixed: true
+          severity: 'CRITICAL'
+          output: 'trivy.txt'
+
+      - name: Notify on Slack - Scan Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_MESSAGE: "Trivy scan failed, check the report."
+
+      - name: Upload Trivy Report to Slack
+        if: failure()
+        uses: adrey/slack-file-upload-action@master
         with:
-          cosign-release: main
-      - name: Check install!
-        run: cosign version
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          file-path: trivy.txt
+          channels: ${{ secrets.SLACK_CHANNEL_ID }}
