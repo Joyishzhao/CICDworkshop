@@ -22,7 +22,16 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL' 
 
-      - name: Upload Trivy scan results to GitHub Security tab
+
+      - name: Send Slack failure message
+        if: failure() 
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_MESSAGE: "Scan failure !"
+
+
+      - name: Upload Trivy scan results to slack
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -32,10 +41,3 @@ jobs:
           file_name: 'text.txt'
           title: 'Go fortune workshop'
           initial_comment: 'post by slack-upload-file'
-
-      - name: Send GitHub Action trigger data to Slack workflow
-        id: slack
-        uses: slackapi/slack-github-action@v1.26.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
