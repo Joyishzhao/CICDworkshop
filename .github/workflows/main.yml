@@ -26,10 +26,13 @@ jobs:
         if: steps.Trivy.exit-code == '0'
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          slack-message: "Scan failed!"
+          payload: |
+          {
+            "text": "Failed trivy scan, see uploaded report"
+          } 
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_MESSAGE: "Scan failed!"
+          SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
 
       - name: Upload Trivy scan results to Slack
         if: steps.Trivy.outcome == 'failure'
