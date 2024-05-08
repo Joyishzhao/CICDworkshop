@@ -22,28 +22,23 @@ jobs:
           output: 'trivy-results.txt'
           severity: 'CRITICAL' 
 
-      - name: Check file existence
-        id: check_files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: 'trivy-results.txt'
-
       - name: Check file content
         id: check_file_content
         run: echo "trivy-results=$(du -s trivy-results.txt | awk '{print $1}')" >> $GITHUB_OUTPUT
       
       - name: Test output
-        run: echo ${{ toJSON(steps.Trivy.outputs) }}
+        run: |
+          echo ${{ steps.check_file_content.outputs.trivy-results}}
 
       - name: Send Slack failure message
-        if: steps.check_files.outputs.files_exists == 'true'
+        if: steps.check_file_content.outputs.trivy-results == '0'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
 
       - name: Upload Trivy scan results to Slack
-        if: steps.check_files.outputs.files_exists == 'true'
+        if: steps.check_file_content.outputs.trivy-results == '0'
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -92,7 +87,7 @@ jobs:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
       
       - name: Send Slack success message
-        if: steps.check_files.outputs.files_exists == 'false'
+        if: steps.check_file_content.outputs.trivy-results != '0'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
