@@ -90,7 +90,7 @@ jobs:
         if: steps.check_file_content.outputs.trivy-results == '0'
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: |
             *Image build & signed*
             *Name:* cher wah
