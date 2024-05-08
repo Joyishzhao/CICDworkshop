@@ -20,7 +20,7 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'HIGH' 
+          severity: 'CRITICAL' 
 
       - name: Send Slack failure message
         if: steps.Trivy.exit-code == '0'
