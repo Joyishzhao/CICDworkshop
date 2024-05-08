@@ -23,14 +23,14 @@ jobs:
           severity: 'CRITICAL' 
 
       - name: Send Slack failure message
-        if: steps.Trivy.exit-code == '0'
+        if: steps.Trivy.output != 'null'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
 
       - name: Upload Trivy scan results to Slack
-        if: steps.Trivy.exit-code == '0'
+        if: steps.Trivy.output != 'null'
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -79,7 +79,7 @@ jobs:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
       
       - name: Send Slack success message
-        if: steps.Trivy.exit-code != '0'
+        if: steps.Trivy.output == 'null'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
