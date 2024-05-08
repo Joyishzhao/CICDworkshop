@@ -20,7 +20,7 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'CRITICAL' 
+          severity: 'CRITICAL,HIGH' 
 
       - name: Check file content
         id: check_file_content
@@ -44,6 +44,10 @@ jobs:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
           file_path: trivy-results.txt
+      
+      - name: Exit workflow 
+        if: steps.check_file_content.outputs.trivy-results != '0'
+        run: exit 1
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -97,4 +101,4 @@ jobs:
             *Matriculation:*  123456
             *Email:* 123466
             *Git:* 4646
-            *Docker:*4564565
+            *Docker:* 4564565
