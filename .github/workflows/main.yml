@@ -6,7 +6,7 @@ on:
       - 'release/v[0-9]+.[0-9]+'
 
 jobs:
-  # SCAN
+  
   build:
     name: Build
     runs-on: ubuntu-20.04
@@ -28,16 +28,16 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-      # Slack Notification
+  
       - name: Send GitHub Action trigger data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      # Message Format
 
-      # Slack upload file 
+
+
    post:
     runs-on: ubuntu-latest
     steps:
@@ -50,9 +50,9 @@ jobs:
           file_name: 'text.txt'
           title: 'title of file'
           initial_comment: 'post by slack-upload-file'
-          # thread_ts: 'option'
+   
 
-# Build and push docker container
+
   ci:
     name: ci
     on:
@@ -82,7 +82,7 @@ jobs:
               push: true
               tags: user/app:latest
 
-# Digitally Sign images with Cosign
+
   example:
     name: example
     runs-on: ubuntu-latest
