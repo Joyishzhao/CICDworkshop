@@ -62,4 +62,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: user/app:latest
+          tags: zhaozy268/gofortune_workshop:latest
