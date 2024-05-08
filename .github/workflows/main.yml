@@ -20,7 +20,7 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'HIGH' 
+          severity: 'CRITICAL' 
 
       - name: Send Slack message
         if: steps.Trivy.outcome == 'failure' 
@@ -29,7 +29,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "scan failed!"
 
-      - name: Upload Trivy scan results to slack
+      - name: Upload Trivy scan results to Slack
         if: steps.Trivy.outcome == 'failure'
         uses: MeilCli/slack-upload-file@v4
         with:
@@ -58,32 +58,25 @@ jobs:
         with:
           context: .
           push: true
-          tags: zhaozy268/gofortune_workshop:latest
+          tags: zhaozy268/gofortune_workshop:${{ github.sha }}
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.5.0
         with:
           cosign-release: 'v2.2.4'
       
-      - name: Check install!
+      - name: Check install
         run: cosign version
 
-      - id: docker_meta
-        uses: docker/metadata-action@v4.4.0
-        with:
-          images: ghcr.io/sigstore/sample-honk
-          tags: type=sha,format=long
           
-      - name: Sign the images with GitHub OIDC Token
+      - name: Sign image with a key
+        run: 
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY zhaozy268/gofortune_workshop:${{ github.sha }}
         env:
+          TAGS: zhaozy268/gofortune_workshop:${{ github.sha }}
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
-          TAGS: ${{ steps.docker_meta.outputs.tags }}
-        run: |
-          images=""
-          for tag in ${TAGS}; do
-            images+="${tag}@${DIGEST} "
-          done
-          cosign sign --yes ${images}
       
       - name: Send Slack successful message
         if: steps.Trivy.outputs.severity == 'CRITICAL'
