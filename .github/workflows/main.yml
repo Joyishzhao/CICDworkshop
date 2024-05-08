@@ -31,8 +31,9 @@ jobs:
       - name: Check file content
         id: check_file_content
         run: echo "trivy-results=$(du -s trivy-results.txt | awk '{print $1}')" >> $GITHUB_OUTPUT
+      
       - name: Test output
-        run: echo ${{ steps.check_file_content.outputs.trivy-results }}
+        run: echo ${{ steps.Trivy.outputs }}
 
       - name: Send Slack failure message
         if: steps.check_files.outputs.files_exists == 'true'
