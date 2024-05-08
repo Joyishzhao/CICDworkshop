@@ -20,14 +20,14 @@ jobs:
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL.HIGH' 
+          severity: 'CRITICAL' 
 
       - name: Send Slack failure message
         if: failure() 
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_MESSAGE: "Scan failure !"
+          SLACK_MESSAGE: "Scan failure !"    
 
       - name: Upload Trivy scan results to slack
         if: failure()
@@ -35,7 +35,7 @@ jobs:
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
           channel_id: ${{ secrets.SLACK_CHANNEL_ID }}
-         
+          file: trivy-results.sarif
 
       - name: Checkout
         uses: actions/checkout@v4
