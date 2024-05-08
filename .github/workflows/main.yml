@@ -22,7 +22,7 @@ jobs:
           output: 'trivy-results.txt'
           severity: 'HIGH' 
 
-      - name: Send Slack message
+      - name: Send Slack failure message
         if: steps.Trivy.exit-code == '0'
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -30,7 +30,7 @@ jobs:
           SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
 
       - name: Upload Trivy scan results to Slack
-        if: steps.Trivy.outcome == 'failure'
+        if: steps.Trivy.exit-code == '0'
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
@@ -73,20 +73,20 @@ jobs:
         run: 
           cosign sign --yes --key env://COSIGN_PRIVATE_KEY zhaozy268/gofortune_workshop:${{ github.sha }}
         env:
-          TAGS: zhaozy268/gofortune_workshop:${{ github.sha }}
+          TAGS: zhaozy268/gofortune_workshop:${{ github.sha }} 
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
       
-      - name: Send Slack successful message
-        if: steps.Trivy.outputs.severity == 'CRITICAL'
-        uses: slackapi/slack-github-action@v1.26.0
+      - name: Send Slack success message
+        if: steps.Trivy.exit-code != '0'
+        uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: |
             *Image build & signed*
-            *Name:* Zhao Ziyang 
-            *Matriculation:* A028
-            *Email:* e1221735 
-            *Git:* 
-            *Docker:*
+            *Name:* cher wah
+            *Matriculation:*  123456
+            *Email:* 123466
+            *Git:* 4646
+            *Docker:*4564565
