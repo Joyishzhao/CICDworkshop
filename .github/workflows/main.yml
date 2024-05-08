@@ -67,11 +67,16 @@ jobs:
       - name: Check install!
         run: cosign version
 
-      - name: Sign Docker Images
+      - name: Sign the images with GitHub OIDC Token
         env:
-          IMAGE_DIGEST: ${{ steps.build_and_push.outputs.digest }}
-        run: cosign sign --yes 'docker.io/my-organization/my-app@${{ IMAGE_DIGEST }}'
-
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          TAGS: ${{ steps.docker_meta.outputs.tags }}
+        run: |
+          images="zzy"
+          for tag in ${TAGS}; do
+            images+="${tag}@${DIGEST} "
+          done
+          cosign sign --yes ${images}
       
       - name: Send Slack successful message
         if: success() 
