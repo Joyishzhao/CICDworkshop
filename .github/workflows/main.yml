@@ -33,7 +33,7 @@ jobs:
         run: echo "trivy-results=$(du -s trivy-results.txt | awk '{print $1}')" >> $GITHUB_OUTPUT
       
       - name: Test output
-        run: echo ${{ steps.Trivy.outputs }}
+        run: echo ${{ toJSON(steps.Trivy.outputs) }}
 
       - name: Send Slack failure message
         if: steps.check_files.outputs.files_exists == 'true'
