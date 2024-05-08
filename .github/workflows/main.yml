@@ -23,16 +23,11 @@ jobs:
           severity: 'HIGH' 
 
       - name: Send Slack message
-        if: steps.Trivy.outcome == 'failure' || steps.Trivy.outputs.severity == 'CRITICAL'
+        if: steps.Trivy.outcome == 'failure' 
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_MESSAGE: |
-            ${{ if eq(steps.Trivy.outputs.severity, 'CRITICAL') }}
-              Scan successful!
-            ${{ else }}
-              Scan failure!
-            ${{ end }}
+          SLACK_MESSAGE: "scan failed!"
 
       - name: Upload Trivy scan results to slack
         if: steps.Trivy.outcome == 'failure'
