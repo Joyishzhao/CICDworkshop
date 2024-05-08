@@ -36,6 +36,7 @@ jobs:
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
+          SLACK_COLOR: "failure"
 
       - name: Upload Trivy scan results to Slack
         if: steps.check_file_content.outputs.trivy-results != '0'
@@ -47,7 +48,7 @@ jobs:
       
       - name: Exit workflow 
         if: steps.check_file_content.outputs.trivy-results != '0'
-        run: exit 0
+        run: exit 1
 
       - name: Checkout
         uses: actions/checkout@v4
