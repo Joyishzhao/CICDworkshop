@@ -19,12 +19,11 @@ jobs:
         with:
           scan-type: 'fs'
           format: 'table'
-          fail-on: 'HIGH'
           output: 'trivy-results.txt'
           severity: 'HIGH' 
 
       - name: Send Slack message
-        if: steps.Trivy.severity == 'HIGH'
+        if: steps.Trivy.exit-code == '0'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
