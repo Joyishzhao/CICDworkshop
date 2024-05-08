@@ -20,7 +20,7 @@ jobs:
           ignore-unfixed: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          severity: 'CRITICAL' 
+          severity: 'CRITICAL.HIGH' 
 
       - name: Send Slack failure message
         if: failure() 
