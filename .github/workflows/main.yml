@@ -24,9 +24,9 @@ jobs:
 
       - name: Send Slack message
         if: steps.Trivy.exit-code == '0'
-        uses: slackapi/slack-github-action@v1.26.0
+        uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: "Failed trivy scan, see uploaded report"
 
       - name: Upload Trivy scan results to Slack
