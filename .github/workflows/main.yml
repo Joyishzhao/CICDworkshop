@@ -26,7 +26,7 @@ jobs:
           format: 'table'
           fail-on: 'CRITICAL'
           ignore-unfixed: true
-          severity: 'CRITICAL'
+          severity: 'CRITICAL.HIGH'
           output: 'trivy.txt'
 
       - name: Notify on Slack - Scan Failure
