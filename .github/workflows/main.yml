@@ -20,14 +20,14 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'CRITICAL' 
+          severity: 'CRITICAL,HIGH' 
 
       - name: Check file existence
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
           files: 'trivy-results.txt'
-          
+
       - name: Check file content
         id: check_file_content
         run: echo "trivy-results=$(cat trivy-results.txt)" >> $GITHUB_OUTPUT
