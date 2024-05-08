@@ -30,6 +30,7 @@ jobs:
           SLACK_MESSAGE: "Scan failure !"
 
       - name: Upload Trivy scan results to slack
+        if: failure()
         uses: MeilCli/slack-upload-file@v4
         with:
           slack_token: ${{ secrets.SLACK_TOKEN }}
