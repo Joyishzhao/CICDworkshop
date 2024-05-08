@@ -27,6 +27,12 @@ jobs:
         uses: andstor/file-existence-action@v1
         with:
           files: 'trivy-results.txt'
+          
+      - name: Check file content
+        id: check_file_content
+        run: echo "trivy-results=$(cat trivy-results.txt)" >> $GITHUB_OUTPUT
+      - name: Test output
+        run: echo ${{ steps.check_file_content.outputs.trivy-results }}
 
       - name: Send Slack failure message
         if: steps.check_files.outputs.files_exists == 'true'
