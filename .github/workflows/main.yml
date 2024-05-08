@@ -86,7 +86,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.26.0
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_MESSAGE: 
           SLACK_MESSAGE: "
           *Image build & signed*\n
           *Name:*Zhao Ziyang \n
