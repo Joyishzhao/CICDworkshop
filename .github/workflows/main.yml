@@ -39,5 +39,5 @@ jobs:
           content: 'This is my go fortune file'
           file_type: 'text'
           file_name: 'text.txt'
-          title: 'Go fortune workshop'
+          title: 'Go—fortune workshop'
           initial_comment: 'post by slack-upload-file'
