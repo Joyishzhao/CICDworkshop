@@ -20,6 +20,12 @@ jobs:
     name: Build
     runs-on: ubuntu-20.04
     steps:
+      - name: Check commit message
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MSG" =~ ^#NORUN ]]; then
+            exit 78
+          fi
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -105,7 +111,7 @@ jobs:
         if: steps.check_file_content.outputs.trivy-results == '0'
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_ }}
           SLACK_MESSAGE: |
             *Image build & signed*
             *Name:* Zhao Ziyang
