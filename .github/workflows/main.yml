@@ -30,7 +30,7 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'CRITICAL,HIGH' 
+          severity: 'CRITICAL,HIGH'  
 
       - name: Check file content
         id: check_file_content
