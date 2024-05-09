@@ -30,7 +30,7 @@ jobs:
           scan-type: 'fs'
           format: 'table'
           output: 'trivy-results.txt'
-          severity: 'CRITICAL' 
+          severity: 'CRITICAL,HIGH' 
 
       - name: Check file content
         id: check_file_content
@@ -108,10 +108,9 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_MESSAGE: |
             *Image build & signed*
-            *Name:* Cher Wah
-            *Matriculation:* 123346
-            *Email:* cherwah@iss.sg
-            *Git:* https://chatgpt.com/?oai-dm=1
-            *Docker:* https://www.bilibili.com/
-
+            *Name:* Zhao Ziyang
+            *Matriculation:* A0285923U
+            *Email:* e1221735@u.nus.edu
+            *Git:* https://github.com/Joyishzhao/CICDworkshop/actions
+            *Docker:* https://hub.docker.com/repository/docker/zhaozy268/gofortune_workshop/general
       
